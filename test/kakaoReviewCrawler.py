@@ -13,6 +13,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 
 
+# TODO error handling
 class KakaoReviewCrawler:
     def __init__(self):
         chrome_opts = webdriver.ChromeOptions()
