@@ -12,6 +12,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from bs4 import BeautifulSoup
 
+from storage.redis import RedisConn
+
+redisCon = RedisConn()
+
 
 class KakaoReviewCrawler:
     def __init__(self):
@@ -72,62 +76,63 @@ class KakaoReviewCrawler:
         :param place: 리뷰 정보 찾을 장소이름
         """
 
+        print(place)
         while_flag = False
         for i, place in enumerate(place_lists):
             # 광고에 따라서 index 조정해야함
             # if i >= 3:
             #   i += 1
-
             place_name = place.select('.head_item > .tit_name > .link_name')[0].text  # place name
-            place_address = place.select('.info_item > .addr > p')[0].text  # place address
+            if not redisCon.is_key_exist(place_name):
+                place_address = place.select('.info_item > .addr > p')[0].text  # place address
 
-            detail_page_xpath = '//*[@id="info.search.place.list"]/li[' + str(i + 1) + ']/div[5]/div[4]/a[1]'
-            self.driver.find_element(By.XPATH, detail_page_xpath).send_keys(Keys.ENTER)
-            self.driver.switch_to.window(self.driver.window_handles[-1])  # 상세정보 탭으로 변환
-            sleep(1)
-
-            # 첫 페이지
-            self.extract_review(place_name)
-
-            # 2-5 페이지
-            idx = 3
-            try:
-                page_num = len(self.driver.find_elements(By.CLASS_NAME, 'link_page'))  # 페이지 수 찾기
-                for i in range(page_num - 1):
-                    # css selector를 이용해 페이지 버튼 누르기
-                    self.driver.find_element(By.CSS_SELECTOR,
-                                             '#mArticle > div.cont_evaluation > div.evaluation_review > div > a:nth-child(' + str(
-                                                 idx) + ')').send_keys(Keys.ENTER)
-                    sleep(1)
-                    self.extract_review(place_name)
-                    idx += 1
-                self.driver.find_element(By.LINK_TEXT, "다음").send_keys(Keys.ENTER)  # 5페이지가 넘는 경우 다음 버튼 누르기
+                detail_page_xpath = '//*[@id="info.search.place.list"]/li[' + str(i + 1) + ']/div[5]/div[4]/a[1]'
+                self.driver.find_element(By.XPATH, detail_page_xpath).send_keys(Keys.ENTER)
+                self.driver.switch_to.window(self.driver.window_handles[-1])  # 상세정보 탭으로 변환
                 sleep(1)
-                self.extract_review(place_name)  # 리뷰 추출
-            except (NoSuchElementException, ElementNotInteractableException):
-                print("no review in crawling")
 
-            # 그 이후 페이지
-            while True:
-                idx = 4
+                # 첫 페이지
+                self.extract_review(place_name)
+
+                # 2-5 페이지
+                idx = 3
                 try:
-                    page_num = len(self.driver.find_elements(By.CLASS_NAME, 'link_page'))
+                    page_num = len(self.driver.find_elements(By.CLASS_NAME, 'link_page'))  # 페이지 수 찾기
                     for i in range(page_num - 1):
+                        # css selector를 이용해 페이지 버튼 누르기
                         self.driver.find_element(By.CSS_SELECTOR,
                                                  '#mArticle > div.cont_evaluation > div.evaluation_review > div > a:nth-child(' + str(
                                                      idx) + ')').send_keys(Keys.ENTER)
                         sleep(1)
                         self.extract_review(place_name)
                         idx += 1
-                    self.driver.find_element(By.LINK_TEXT, '다음').send_keys(Keys.ENTER)  # 10페이지 이상으로 넘어가기 위한 다음 버튼 클릭
+                    self.driver.find_element(By.LINK_TEXT, "다음").send_keys(Keys.ENTER)  # 5페이지가 넘는 경우 다음 버튼 누르기
                     sleep(1)
                     self.extract_review(place_name)  # 리뷰 추출
                 except (NoSuchElementException, ElementNotInteractableException):
                     print("no review in crawling")
-                    break
 
-            self.driver.close()
-            self.driver.switch_to.window(self.driver.window_handles[0])  # 검색 탭으로 전환
+                # 그 이후 페이지
+                while True:
+                    idx = 4
+                    try:
+                        page_num = len(self.driver.find_elements(By.CLASS_NAME, 'link_page'))
+                        for i in range(page_num - 1):
+                            self.driver.find_element(By.CSS_SELECTOR,
+                                                     '#mArticle > div.cont_evaluation > div.evaluation_review > div > a:nth-child(' + str(
+                                                         idx) + ')').send_keys(Keys.ENTER)
+                            sleep(1)
+                            self.extract_review(place_name)
+                            idx += 1
+                        self.driver.find_element(By.LINK_TEXT, '다음').send_keys(Keys.ENTER)  # 10페이지 이상으로 넘어가기 위한 다음 버튼 클릭
+                        sleep(1)
+                        self.extract_review(place_name)  # 리뷰 추출
+                    except (NoSuchElementException, ElementNotInteractableException):
+                        print("no review in crawling")
+                        break
+
+                self.driver.close()
+                self.driver.switch_to.window(self.driver.window_handles[0])  # 검색 탭으로 전환
 
     def extract_review(self, place_name):
         ret = True
@@ -145,11 +150,12 @@ class KakaoReviewCrawler:
                 rating = review.select('.grade_star > em')  # 별점
                 val = ''
                 if len(comment) != 0:
-                    if len(rating) != 0:
-                        val = comment[0].text + '-' + rating[0].text  # .replace('점', '')
-                    else:
-                        val = comment[0].text + '/0'
-                    print(val)
+                    # if len(rating) != 0:
+                    #     val = comment[0].text + '-' + rating[0].text  # .replace('점', '')
+                    # else:
+                    #     val = comment[0].text + '/0'
+                    review = comment[0].text
+                    redisCon.set_place_review(place_name, review)
 
         else:
             # print('no review in extract')

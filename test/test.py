@@ -1,5 +1,6 @@
 import kakaoReviewCrawler
 import tourAPI
+from storage.redis import RedisConn
 
 if __name__ == "__main__":
     # tourAPI 를 통해 관광지 리스트 추출
