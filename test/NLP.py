@@ -44,8 +44,9 @@ class NLP:
 
         with open('./stopwords.txt', 'r') as f:
             list_file = f.readlines()
-        stopwords = list_file[0].split(",")
-        remove_stopwords = [x for x in remove_one_word if x not in stopwords]
+            list_file = list(map(lambda s: s.strip(), list_file))
+
+        remove_stopwords = [x for x in remove_one_word if x not in list_file]
 
         return remove_stopwords
 
@@ -76,6 +77,7 @@ class NLP:
 if __name__ == "__main__":
     exampleTexts = ["몇해전 신축하여 외관도 전통한옥 가미하여 지어짐.", "잘 가꾸어진 공원이에요 걷기좋아요", "공기도 좋고 이뻐요"]
 
+    # TODO 불용어 처리 좀 더 고도화
     nlp = NLP()
     keywords = nlp.run(exampleTexts)
 
