@@ -7,7 +7,7 @@ PLACE_REVIEW_PREFIX = "PLACE_REVIEW:"
 class RedisConn:
     def __init__(self):
         # local: "localhost", docker: "host.docker.internal", other: from env
-        self.redis_host = os.environ.get("REDIS_HOST", "localhost")
+        self.redis_host = os.environ.get("REDIS_HOST", "35.184.164.234")
         self.redis_port = os.environ.get("REDIS_PORT", 6379)
         self.redis_db = os.environ.get("REDIS_DB", 0)
         self.redis_client = redis.StrictRedis(host=self.redis_host, db=self.redis_db)

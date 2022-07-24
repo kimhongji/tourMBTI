@@ -20,7 +20,7 @@ redisCon = RedisConn()
 class KakaoReviewCrawler:
     def __init__(self):
         chrome_opts = webdriver.ChromeOptions()
-        #chrome_opts.add_argument('headless')
+        chrome_opts.add_argument('headless')
         chrome_opts.add_argument('lang=ko_KR')
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_opts)
         self.driver.implicitly_wait(4)  # 렌더링 될때까지 기다린다 4초
@@ -41,13 +41,11 @@ class KakaoReviewCrawler:
         # 검색된 첫 장소 크롤링
         if len(place_lists) > 0:
             first_place = place_lists[0]
-            self.crawling(first_place)
+            self.crawling(place=first_place, place_name=place)
         search_area.clear()
 
-    def crawling(self, place):
-        place_name = place.select('.head_item > .tit_name > .link_name')[0].text  # place name
+    def crawling(self, place, place_name):
         if not redisCon.is_place_review_exist(place_name):
-            place_address = place.select('.info_item > .addr > p')[0].text  # place address
             detail_page_xpath = '//*[@id="info.search.place.list"]/li[1]/div[5]/div[4]/a[1]'
             try:
                 self.driver.find_element(By.XPATH, detail_page_xpath).send_keys(Keys.ENTER)
@@ -60,7 +58,7 @@ class KakaoReviewCrawler:
                         page_num = len(self.driver.find_elements(By.CLASS_NAME, 'link_page'))  # 페이지 수 찾기
                         self.extract_review(place_name)
                         sleep(1)
-                        for i in range(page_num - 1):
+                        for i in range(0, page_num - 1):
                             idx += 1
                             self.driver.find_element(By.XPATH,
                                                      "//div[@id='mArticle']/div[contains(@class, 'cont_evaluation')]"
@@ -69,6 +67,7 @@ class KakaoReviewCrawler:
                             sleep(1)
                             self.extract_review(place_name)
                         self.driver.find_element(By.LINK_TEXT, "다음").send_keys(Keys.ENTER)  # 5페이지가 넘는 경우 다음 버튼 누르기
+                        idx += 1
                 except (NoSuchElementException, ElementNotInteractableException):
                     self.driver.close()
                     self.driver.switch_to.window(self.driver.window_handles[0])  # 검색 탭으로 전환
