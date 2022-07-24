@@ -1,3 +1,4 @@
+import json
 import re
 from konlpy.tag import Okt
 from tqdm import tqdm
@@ -76,13 +77,13 @@ class NLP:
 if __name__ == "__main__":
     exampleTexts = ["몇해전 신축하여 외관도 전통한옥 가미하여 지어짐.", "잘 가꾸어진 공원이에요 걷기좋아요", "공기도 좋고 이뻐요"]
 
-    # TODO redis 에서 받아온 데이터에서 관광지/키워드 list 정제해서 -> stdout / .txt ?  (1) -> 찬님
-    # TODO 관광지 info 데이터 활용? -> tourAPI 혹은 등등 위키?  ->
-    # TODO 관광지별 어떤 키워드들이 있는지? EDA?
-    # TODO GCP 써보자 (사전 조사 해보자, 요금제 확인), 전체 flow 점검 (중간점검) , flask (cloud run?) (2) -> 홍
     # key: 관광지, value: 키워드 list (빈도수 포함) {키워드, num}
     # { "경복궁" : [{"좋다", 1} , "한적하다", "넓다"... ] }
     nlp = NLP()
     keywords = nlp.run(exampleTexts)
 
     print(keywords)
+
+    keyword_json = json.dumps(keywords, ensure_ascii=False)
+
+    print(keyword_json)
