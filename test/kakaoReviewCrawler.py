@@ -29,9 +29,9 @@ class KakaoReviewCrawler:
     def __del__(self):
         self.driver.quit()
 
-    def search(self, place):
+    def search(self, place_name):
         search_area = self.driver.find_element(By.XPATH, '//*[@id="search.keyword.query"]')  # 검색 창
-        search_area.send_keys(place)  # 검색어 입력
+        search_area.send_keys(place_name)  # 검색어 입력
         self.driver.find_element(By.XPATH, '//*[@id="search.keyword.submit"]').send_keys(Keys.ENTER)  # Enter로 검색
         sleep(1)
         # 1번 페이지 place list 읽기
@@ -40,39 +40,39 @@ class KakaoReviewCrawler:
         place_lists = soup.select('.placelist > .PlaceItem')
         # 검색된 첫 장소 크롤링
         if len(place_lists) > 0:
-            first_place = place_lists[0]
-            self.crawling(place=first_place, place_name=place)
+            self.crawling(place_name=place_name)
+        else:
+            redisCon.set_place_review(place_name, "")
         search_area.clear()
 
-    def crawling(self, place, place_name):
-        if not redisCon.is_place_review_exist(place_name):
-            detail_page_xpath = '//*[@id="info.search.place.list"]/li[1]/div[5]/div[4]/a[1]'
+    def crawling(self, place_name):
+        detail_page_xpath = '//*[@id="info.search.place.list"]/li[1]/div[5]/div[4]/a[1]'
+        try:
+            self.driver.find_element(By.XPATH, detail_page_xpath).send_keys(Keys.ENTER)
+            self.driver.switch_to.window(self.driver.window_handles[-1])  # 상세정보 탭으로 변환
+            sleep(0.5)
             try:
-                self.driver.find_element(By.XPATH, detail_page_xpath).send_keys(Keys.ENTER)
-                self.driver.switch_to.window(self.driver.window_handles[-1])  # 상세정보 탭으로 변환
-                sleep(1)
-                try:
-                    # review_page_idx
-                    idx = 1
-                    while True:
-                        page_num = len(self.driver.find_elements(By.CLASS_NAME, 'link_page'))  # 페이지 수 찾기
-                        self.extract_review(place_name)
-                        sleep(1)
-                        for i in range(0, page_num - 1):
-                            idx += 1
-                            self.driver.find_element(By.XPATH,
-                                                     "//div[@id='mArticle']/div[contains(@class, 'cont_evaluation')]"
-                                                     "/div[@class='evaluation_review']/div/a[@data-page=" +
-                                                     str(idx) + "]").send_keys(Keys.ENTER)
-                            sleep(1)
-                            self.extract_review(place_name)
-                        self.driver.find_element(By.LINK_TEXT, "다음").send_keys(Keys.ENTER)  # 5페이지가 넘는 경우 다음 버튼 누르기
+                # review_page_idx
+                idx = 1
+                while True:
+                    page_num = len(self.driver.find_elements(By.CLASS_NAME, 'link_page'))  # 페이지 수 찾기
+                    self.extract_review(place_name)
+                    sleep(0.5)
+                    for i in range(0, page_num - 1):
                         idx += 1
-                except (NoSuchElementException, ElementNotInteractableException):
-                    self.driver.close()
-                    self.driver.switch_to.window(self.driver.window_handles[0])  # 검색 탭으로 전환
+                        self.driver.find_element(By.XPATH,
+                                                 "//div[@id='mArticle']/div[contains(@class, 'cont_evaluation')]"
+                                                 "/div[@class='evaluation_review']/div/a[@data-page=" +
+                                                 str(idx) + "]").send_keys(Keys.ENTER)
+                        sleep(0.5)
+                        self.extract_review(place_name)
+                    self.driver.find_element(By.LINK_TEXT, "다음").send_keys(Keys.ENTER)  # 5페이지가 넘는 경우 다음 버튼 누르기
+                    idx += 1
             except (NoSuchElementException, ElementNotInteractableException):
-                print("no review in crawling")
+                self.driver.close()
+                self.driver.switch_to.window(self.driver.window_handles[0])  # 검색 탭으로 전환
+        except (NoSuchElementException, ElementNotInteractableException):
+            print("no review in crawling")
 
     def extract_review(self, place_name):
         ret = True
