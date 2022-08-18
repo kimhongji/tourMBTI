@@ -11,7 +11,6 @@ rbenv shell 2.7.6
 gem update --system
 bin/bundle install
 
-RAILS_ENV=development bin/rails assets:precompile
 RAILS_ENV=development bin/rails server -p 3000
 ```
 
