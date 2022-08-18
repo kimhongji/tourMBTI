@@ -1,0 +1,2 @@
+class TourKeyword < ApplicationRecord
+end

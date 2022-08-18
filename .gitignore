@@ -21,3 +21,24 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+#intellij
+.idea
+
+# for test
+test/venv
+test/.idea
+test/__pycache__
+
+# for rails
+railsTest/.idea
+railsTest/.bundle
+railsTest/db/*.sqlite3
+railsTest/db/*.sqlite3-journal
+railsTest/log/*
+railsTest/tmp/*
+!/log/.keep
+!/tmp/.keep
+railsTest/.byebug_history
+
+

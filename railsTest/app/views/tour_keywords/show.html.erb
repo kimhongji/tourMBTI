@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @tour_keyword.name %>
+</p>
+
+<p>
+  <strong>Keywords:</strong>
+  <%= @tour_keyword.keywords %>
+</p>
+
+<%= link_to 'Edit', edit_tour_keyword_path(@tour_keyword) %> |
+<%= link_to 'Back', tour_keywords_path %>
