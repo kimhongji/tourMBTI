@@ -5,6 +5,7 @@ from NLP import NLP
 from redis_connector import RedisConn
 from tourAPI import TourAPI, AreaCodes
 
+
 class MysqlConn:
     def __init__(self):
         self.db = pymysql.connect(
@@ -18,39 +19,60 @@ class MysqlConn:
 
     def __del__(self):
         self.db.close()
+        print("MysqlConn Close")
 
     def insert(self, name, keywords):
-        sql = "Insert INTO tour_keywords (Name, Keywords) VALUES (%s, %s)"
+        sql = "Insert INTO tour_keywords (name, keywords) VALUES (%s, %s)"
 
         self.cursor.execute(sql, (name, keywords))
         self.db.commit()
+
+    def is_exist(self, name):
+        sql = "Select count(*) from tour_keywords where name=%s"
+
+        self.cursor.execute(sql, name)
+        cnt = self.cursor.fetchone()
+
+        if cnt[0] > 0:
+            return True
+        else:
+            return False
 
 
 
 if __name__ == "__main__":
     api = TourAPI(AreaCodes.SEOUL)
-    contentTypeIds = [12]
+    contentTypeIds = ["12"]
 
     redis_conn = RedisConn()
     mysql_conn = MysqlConn()
     for tour in api.get_tour_list(contentTypeIds):
         raw = []
+        # reviews
         reviews = redis_conn.get_place_reviews(tour["title"])
-        info = redis_conn.get_place_info(tour["title"])
+        for review in reviews:
+            raw.append(review)
 
-        raw.append(reviews)
+        # info
+        info = redis_conn.get_place_info(tour["title"])
         raw.append(info)
+
+        # wiki
+        if redis_conn.is_place_wiki_exist(tour["title"]):
+            wiki = redis_conn.get_place_wiki(tour["title"])
+            raw.append(wiki)
+
+        print(tour['title'])
+
+        if mysql_conn.is_exist(tour['title']):
+            print("continue")
+            continue
 
         nlp = NLP()
         keywords = nlp.run(raw)
 
-        print(keywords)
+        # print(keywords)
 
-        keyword_json = json.dumps(keywords)
+        keyword_json = json.dumps(keywords, ensure_ascii=False)
+        print(keyword_json)
         mysql_conn.insert(tour['title'], keyword_json)
-
-
-
-
-
-

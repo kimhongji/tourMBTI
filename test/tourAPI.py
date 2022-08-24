@@ -2,8 +2,13 @@ from urllib.request import urlopen
 import json
 import re
 
-_API_ENDPOINT = 'http://api.visitkorea.or.kr/openapi/service/rest/KorService'
-_PARAMS = 'areaCode={0}&ServiceKey={1}&MobileOS={2}&MobileApp={3}&_type=json'
+# GUIDE : https://api.visitkorea.or.kr/#/useKoreaGuide
+# TODO
+# DB table (tour_keyword) 만 넣고, 실제 DB 에서는 tour ApI 의 위치기반 URL 호출 하기
+
+
+_API_ENDPOINT = 'http://apis.data.go.kr/B551011/KorService'
+_PARAMS = 'areaCode={0}&serviceKey={1}&MobileOS={2}&MobileApp={3}&_type=json'
 
 _URLS = {
     'tour_list': _API_ENDPOINT + '/areaBasedList?' + _PARAMS,
@@ -81,10 +86,13 @@ class TourAPI:
         Inquire all tour list
         :rtype: list
         """
+        #print(self.tour_list_url.format(1))
+        print(urlopen(self.tour_list_url.format(1)).read().decode('utf-8'))
         resp = json.loads(urlopen(self.tour_list_url.format(1)).read().decode('utf-8'))
         total_count = resp['response']['body']['totalCount']
         # Get total count
 
+        a = self.tour_list_url.format(total_count)
         resp = json.loads(urlopen(self.tour_list_url.format(total_count)).read().decode('utf-8'))
         total_data = resp['response']['body']['items']['item']
         # Extract data list
@@ -381,10 +389,11 @@ class TourAPI:
 
 if __name__ == '__main__':
     api = TourAPI(AreaCodes.SEOUL)
-    contentTypeIds = [12, 14, 39]
+    contentTypeIds = ["12", "14", "39"]
     # print(api.get_tour_list())
     for tour in api.get_tour_list(contentTypeIds):
         # print(api.get_detail_common(tour['content_id']))
         # print(api.get_detail_intro(tour['content_id']))
         # api.get_detail_images(tour['content_id'])
+        #print(tour)
         print(tour['title'])
