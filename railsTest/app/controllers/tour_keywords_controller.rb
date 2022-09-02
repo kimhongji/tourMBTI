@@ -1,9 +1,29 @@
 class TourKeywordsController < ApplicationController
   before_action :set_tour_keyword, only: %i[ show edit update destroy ]
+  autocomplete :tour_keyword, :name, :full => true
 
   # GET /tour_keywords or /tour_keywords.json
   def index
     @tour_keywords = TourKeyword.all
+  end
+
+  def search
+    keyword =  params[:name]
+
+    # 검색 엔진이 들어가야함
+    @keyword = TourKeyword.find_by_name(keyword)
+    keywords = @keyword.keywords
+
+    value_hash = JSON.parse(keywords)
+    sorted_array = value_hash.sort_by {|_key, value| value}.reverse
+    @keywords_result = sorted_array.take(10).to_h
+    require 'json'
+    @keywords_json = sorted_array.map{ |array|
+      {
+        "name": array[0],
+        "weight": array[1]
+      }
+    }.to_json
   end
 
   # GET /tour_keywords/1 or /tour_keywords/1.json
