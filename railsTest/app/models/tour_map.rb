@@ -1,0 +1,2 @@
+class TourMap < ApplicationRecord
+end
