@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get '' => 'home#index'
+  get 'tour_map' => 'tour_map#index'
   get 'tour_keywords/search' => 'tour_keywords#search', :as => :tour_keyword_search
   resources :tour_keywords do
     get :autocomplete_tour_keyword_name, :on => :collection
