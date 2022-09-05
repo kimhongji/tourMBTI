@@ -17,9 +17,8 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="#portfolio">Portfolio</a></li>
-        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="#about">Tour Keyword</a></li>
-        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="#contact">Tour Map</a></li>
+        <li class="nav-item mx-0 mx-lg-1"><%= link_to 'Tour Keyword', tour_keywords_path(@tour_keywords), class: "nav-link py-3 px-0 px-lg-3 rounded" %></li>
+        <li class="nav-item mx-0 mx-lg-1"><%= link_to 'Tour Map', tour_map_path(@tour_map), class: "nav-link py-3 px-0 px-lg-3 rounded" %></li>
       </ul>
     </div>
   </div>
