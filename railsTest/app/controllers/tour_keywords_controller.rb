@@ -5,6 +5,7 @@ class TourKeywordsController < ApplicationController
   # GET /tour_keywords or /tour_keywords.json
   def index
     @tour_keywords = TourKeyword.all
+    @tour_map = TourMap.all
   end
 
   def search

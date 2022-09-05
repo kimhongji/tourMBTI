@@ -17,9 +17,8 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="#portfolio">Portfolio</a></li>
-        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="#about">Tour Keyword</a></li>
-        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="#contact">Tour Map</a></li>
+        <li class="nav-item mx-0 mx-lg-1"><%= link_to 'Tour Keyword', tour_keywords_path(@tour_keywords), class: "nav-link py-3 px-0 px-lg-3 rounded" %></li>
+        <li class="nav-item mx-0 mx-lg-1"><%= link_to 'Tour Map', tour_map_path(@tour_map), class: "nav-link py-3 px-0 px-lg-3 rounded" %></li>
       </ul>
     </div>
   </div>
@@ -58,18 +57,14 @@
       <div class="col-md-6 col-lg-4 mb-5">
         <h4 class="text-center text-uppercase text-secondary mb-0">키워드 클라우드</h4>
           <div class="portfolio-item mx-auto" data-bs-toggle="modal" data-bs-target="#portfolioModal1">
-            <a href="keywordcloud_search.html">
-              <img class="img-fluid" src="/assets/cabin.png"></img>
-            </a>
+             <%= link_to(image_tag("cabin.png", class: 'img-fluid'),  tour_keywords_path(@tour_keywords),  :method => :get) %>
           </div>
       </div>
       <!-- Portfolio Item 2-->
       <div class="col-md-6 col-lg-4 mb-5">
         <h4 class="text-center text-uppercase text-secondary mb-0">내 주변의 관광지</h4>
           <div class="portfolio-item mx-auto" data-bs-toggle="modal" data-bs-target="#portfolioModal2">
-            <a href="around.html">
-              <img class="img-fluid" src="/assets/cake.png"></img>
-            </a>
+            <%= link_to(image_tag("cake.png", class: 'img-fluid'),  tour_map_path(@tour_map),  :method => :get) %>
           </div>
       </div>
     </div>
