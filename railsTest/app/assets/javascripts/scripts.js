@@ -55,61 +55,52 @@ window.addEventListener('DOMContentLoaded', event => {
 
 function FindTour() {
 
-        var table = document.getElementById('mytable');
+    var table = document.getElementById('mytable');
 
-        var url = 'http://apis.data.go.kr/B551011/KorService/locationBasedList?serviceKey=zvyVv9%2BUiLc7SY5wYKup3vpZnaUd05Zj4MfgBo4DqQXjTN3180b3bINu1x5CKbLqduyzU5YO%2BIPHXdIJINwjYQ%3D%3D&numOfRows=10&pageNo=1&MobileOS=ETC&MobileApp=AppTest&mapX='+ xMap + '&mapY=' + yMap + '&radius=1000&listYN=Y&contentTypeId=12';
+    let url = get_default_url() + '/tour_map/tour_list_from_xy?mapX=' + xMap + '&mapY=' + yMap;
 
+    console.log(url);
+    axios.get(url).then((Response) => {
         // save marker position
         var positions = [];
 
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function(){
-	        if(xhttp.readyState == 4 && xhttp.status == 200) { //file을 읽어들이는데 성공한 경우
-		      var xmlDoc = xhttp.responseXML;
-	          var titleTag = xmlDoc.getElementsByTagName("title");
+        console.log(Response);
+        // 테이블 초기화 과정
+        var tbody = document.getElementsByTagName("tbody")[0];
+        while(tbody.rows.length > 0){
+            tbody.deleteRow(0);
+        }
 
-	          var tbody = document.getElementsByTagName("tbody")[0];
-              while(tbody.rows.length > 0){
-                  tbody.deleteRow(0);
-              }
+        for (i = 0; i < Response.data.length; i++) {
+            let tour_info = Response.data[i]
 
-              for (i = 0; i < titleTag.length; i++) {
-                    /* var title = arr[i].title;
-                    var author = arr[i].author;
-                    var price = arr[i].price; */
+            let title = tour_info.title;
+            let addr = tour_info.addr;
+            let keywords = tour_info.keywords;
 
-                    var title = xmlDoc.getElementsByTagName("title")[i].innerHTML;
-                    var addr = xmlDoc.getElementsByTagName("addr1")[i].innerHTML;
+            positions.push({
+                title: title,
+                latlng: new kakao.maps.LatLng(tour_info.mapY, tour_info.mapX)
+            })
 
-                    positions.push({
-                        title: xmlDoc.getElementsByTagName("title")[i].innerHTML,
-                        latlng: new kakao.maps.LatLng(xmlDoc.getElementsByTagName("mapy")[i].innerHTML, xmlDoc.getElementsByTagName("mapx")[i].innerHTML)
-                    })
+            var thTitle = document.createTextNode(title);
+            var tdAddr = document.createTextNode(addr);
+            var tdKeywords = document.createTextNode(keywords);
+            var tr = document.createElement("tr");
+            var th = document.createElement("th");
+            var td1 = document.createElement("td");
+            var td2 = document.createElement("td");
 
-                    var thTitle = document.createTextNode(title);
-                    var tdAddr = document.createTextNode(addr);
-                    var tr = document.createElement("tr");
-                    var th = document.createElement("th");
-                    var td1 = document.createElement("td");
-                    var td2 = document.createElement("td");
+            th.appendChild(thTitle);
+            td1.appendChild(tdAddr);
+            td2.appendChild(tdKeywords);
 
-                    th.appendChild(thTitle);
-                    td1.appendChild(tdAddr);
+            tr.appendChild(th);
+            tr.appendChild(td1);
+            tr.appendChild(td2);
 
-                    tr.appendChild(th);
-                    tr.appendChild(td1);
-                    tr.appendChild(td2);
-
-                    tbody.appendChild(tr);
-
-                    console.log("4");
-
-                    }
-                }
-            }
-
-        xhttp.open("GET", url, false);
-        xhttp.send();
+            tbody.appendChild(tr);
+        }
 
         // 마커 이미지의 이미지 주소입니다
         var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
@@ -130,4 +121,5 @@ function FindTour() {
                 image : markerImage // 마커 이미지
             });
         }
+    });
 }

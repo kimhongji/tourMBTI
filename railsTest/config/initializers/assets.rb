@@ -12,3 +12,4 @@ Rails.application.config.assets.version = '1.0'
 
 Rails.application.config.assets.precompile += %w( scripts.js )
 Rails.application.config.assets.precompile += %w( styles.css )
+Rails.application.config.assets.precompile += %w( libs/request.js libs/axios.min.js )
