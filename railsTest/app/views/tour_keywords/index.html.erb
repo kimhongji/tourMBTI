@@ -44,12 +44,12 @@
 <section class="page-section portfolio" id="portfolio">
   <div class="container">
     <%= form_tag(tour_keyword_search_path, method: "get") do %> <%# method를 get방식으로 받아내며, parameter가 /searches/result로 넘어갈 예정. %>
-      <%= label_tag(:div, "검색 단어 :") %>
-      <%= autocomplete_field_tag('name', '', autocomplete_tour_keyword_name_tour_keywords_url, :size => 75) %>
+      <%= label_tag(:div, "검색 단어 :", :style => "font-weight: 400;") %>
+      <%= autocomplete_field_tag('name', '', autocomplete_tour_keyword_name_tour_keywords_url, :size => 75, :class => "form-control") %>
       <%#= text_field_tag(:search_text) %> <%# 검색 하고자 하는 단어를 입력받음, 이 떄 name은 [검색 단어] %>
       <%#= hidden_field_tag(:param_contents, "#{contents}") %> <%# 모델 이름을 자동으로 받아냄 (name은 [bulletin], value 값에는 [모델 이름]이 들어감) %>
       <%#= hidden_field_tag(:param_products, "#{products}") %>
-      <%= submit_tag("검색") %>
+      <%= submit_tag("검색", :class => "text-center mt-4 btn btn-primary", :style => "width:70px; height:40px; float: right;") %>
     <% end %>
   </div>
 </section>
