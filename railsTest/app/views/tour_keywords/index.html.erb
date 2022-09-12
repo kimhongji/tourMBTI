@@ -42,6 +42,7 @@
 </header>
 <!-- Portfolio Section-->
 <section class="page-section portfolio" id="portfolio">
+  <%= flash_message %>
   <div class="container">
     <%= form_tag(tour_keyword_search_path, method: "get") do %> <%# method를 get방식으로 받아내며, parameter가 /searches/result로 넘어갈 예정. %>
       <%= label_tag(:div, "검색 단어 :", :style => "font-weight: 400;") %>

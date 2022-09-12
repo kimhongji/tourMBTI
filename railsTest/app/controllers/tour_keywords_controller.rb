@@ -12,19 +12,23 @@ class TourKeywordsController < ApplicationController
     keyword =  params[:name]
 
     # 검색 엔진이 들어가야함
-    @keyword = TourKeyword.find_by_name(keyword)
-    keywords = @keyword.keywords
-
-    value_hash = JSON.parse(keywords)
-    sorted_array = value_hash.sort_by {|_key, value| value}.reverse
-    @keywords_result = sorted_array.take(10).to_h
-    require 'json'
-    @keywords_json = sorted_array.map{ |array|
-      {
-        "name": array[0],
-        "weight": array[1]
-      }
-    }.to_json
+    begin
+      @keyword = TourKeyword.find_by_name(keyword)
+      keywords = @keyword.keywords
+      value_hash = JSON.parse(keywords)
+      sorted_array = value_hash.sort_by {|_key, value| value}.reverse
+      @keywords_result = sorted_array.take(10).to_h
+      require 'json'
+      @keywords_json = sorted_array.map{ |array|
+        {
+          "name": array[0],
+          "weight": array[1]
+        }
+      }.to_json
+    rescue NoMethodError => e
+      flash[:notice] =  "검색어를 찾을수 없습니다!"
+      redirect_to action: 'index'
+    end
   end
 
   # GET /tour_keywords/1 or /tour_keywords/1.json
