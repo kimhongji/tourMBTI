@@ -8,17 +8,72 @@ class TourKeywordsController < ApplicationController
     @tour_map = TourMap.all
   end
 
+  def recommendations (tour_list, target_keyword_list)
+    tour_list.map! do |tour|
+
+      intersection = (tour[:keyword_list] & target_keyword_list).size
+      union = (tour[:keyword_list] | target_keyword_list).size
+
+      tour[:jaccard_index] = (intersection.to_f / union.to_f) rescue 0.0
+      tour
+    end.sort_by { |tour| 1 - tour[:jaccard_index] }
+  end
+
   def search
-    keyword =  params[:name]
+    name =  params[:name]
 
     # 검색 엔진이 들어가야함
     begin
-      @keyword = TourKeyword.find_by_name(keyword)
-      keywords = @keyword.keywords
-      value_hash = JSON.parse(keywords)
-      sorted_array = value_hash.sort_by {|_key, value| value}.reverse
-      @keywords_result = sorted_array.take(10).to_h
       require 'json'
+      @keyword = TourKeyword.find_by_name(name)
+      keywords = @keyword.keywords
+      sorted_array = JSON
+                       .parse(keywords)
+                       .sort_by {|_key, value| value}
+                       .reverse
+      target_keyword_list = sorted_array
+        .map{
+          |k, v|
+          result = []
+          while (v > 0)
+            v = v - 1
+            result << k
+          end
+          result
+        }.flatten
+
+      tour_list = TourKeyword.all
+                                  .filter { |k| k.name != name }
+                                  .map {
+                                    |k|
+                                    {
+                                      name: k.name,
+                                      keywords: JSON
+                                                  .parse(k.keywords)
+                                                  .sort_by {|key, value| value}
+                                                  .reverse
+                                                  .map{|key, value| key}
+                                                  .take(5)
+                                                  .join(", "),
+                                      keyword_list: JSON.parse(k.keywords)
+                                          .sort_by {
+                                            |_key, value|
+                                            value
+                                          }
+                                          .reverse.take(10)
+                                          .map{ |k, v|
+                                            result = []
+                                            while (v > 0)
+                                              v = v - 1
+                                              result << k
+                                            end
+                                            result
+                                          }
+                                          .flatten
+                                    }
+                                  }
+      @recommend_list = recommendations(tour_list, target_keyword_list).take(10)
+      @keywords_result = sorted_array.take(10).to_h
       @keywords_json = sorted_array.map{ |array|
         {
           "name": array[0],

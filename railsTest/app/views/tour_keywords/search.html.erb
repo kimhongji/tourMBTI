@@ -108,6 +108,23 @@
     </div>
 <!--    https://www.highcharts.com/demo/wordcloud-->
   </div>
+  <div class="container row">
+    <h3>유사 관광지 리스트</h3>
+    <table class="table" border="1">
+      <thead>
+      <th>관광지</th>
+      <th>대표 키워드</th>
+      </thead>
+      <tbody>
+      <% @recommend_list.each do |recommend_tour| %>
+        <tr>
+          <td><%= recommend_tour[:name] %></td>
+          <td><%= recommend_tour[:keywords] %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
 </section>
 
 <!-- Copyright Section-->
