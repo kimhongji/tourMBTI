@@ -37,7 +37,7 @@
       <div class="divider-custom-line"></div>
     </div>
     <!-- Masthead Subheading-->
-    <p class="masthead-subheading font-weight-light mb-0">관광지를 키워드로 표현하자!</p>
+    <p class="masthead-subheading font-weight-light mb-0" style="line-height: 1.4;">관광지를 키워드로 표현하여, 나만의 맞춤 관광지를 알 수 있는 서비스입니다. <br/> 이제 관광도 취향에 따라 즐기세요! </p>
   </div>
 </header>
 <!-- Portfolio Section-->
@@ -59,6 +59,7 @@
           <div class="portfolio-item mx-auto" data-bs-toggle="modal" data-bs-target="#portfolioModal1">
              <%= link_to(image_tag("cabin.png", class: 'img-fluid'),  tour_keywords_path(@tour_keywords),  :method => :get) %>
           </div>
+          <p class="text-uppercase text-secondary mb-0" style="padding: 7px 0px 0px 0px; font-size: 20px; margin: 0px; line-height: 1.2;">관광지를 입력하여, 관련된 키워드를 확인 할 수 있습니다. <br/> 어떤 키워드로 이루어져 있는지 확인해보세요! <br/>또한, 비슷한 키워드를 가지고 있는 관광지가 무엇인지 추천해드립니다.  </p>
       </div>
       <!-- Portfolio Item 2-->
       <div class="col-md-6 col-lg-4 mb-5">
@@ -66,6 +67,7 @@
           <div class="portfolio-item mx-auto" data-bs-toggle="modal" data-bs-target="#portfolioModal2">
             <%= link_to(image_tag("cake.png", class: 'img-fluid'),  tour_map_path(@tour_map),  :method => :get) %>
           </div>
+           <p class="text-uppercase text-secondary mb-0" style="padding: 7px 0px 0px 0px; font-size: 20px; margin: 0px; line-height: 1.2;">위치를 기반으로 근처의 관광지를 알려드립니다. <br/> 근처 관광지들이 어떤 키워드를 가지고 있는지도 확인해보세요! </p>
       </div>
     </div>
   </div>
