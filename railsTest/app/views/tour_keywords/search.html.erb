@@ -49,13 +49,14 @@
 </header>
 <!-- Portfolio Section-->
 <section class="page-section portfolio" id="portfolio">
-  <div class="container row">
+  <div class="row">
+    <h3 style="adding: 15px; margin-left: 40px;">관광지 키워드 분석 결과</h3>
     <div class="col-md-4">
-      <table>
+      <table class="table" border="1">
         <thead>
         <tr>
-          <th>keyword</th>
-          <th>num</th>
+          <th>키워드</th>
+          <th>빈도수</th>
         </tr>
         </thead>
 
@@ -108,8 +109,8 @@
     </div>
 <!--    https://www.highcharts.com/demo/wordcloud-->
   </div>
-  <div class="container row">
-    <h3>유사 관광지 리스트</h3>
+  <div class="row">
+    <h3 style="adding: 15px; margin-left: 40px;">유사 관광지 리스트</h3>
     <table class="table" border="1">
       <thead>
       <th>관광지</th>
@@ -119,7 +120,13 @@
       <% @recommend_list.each do |recommend_tour| %>
         <tr>
           <td><%= recommend_tour[:name] %></td>
-          <td><%= recommend_tour[:keywords] %></td>
+<!--          <td><%#= recommend_tour[:keywords] %></td>-->
+          <!-- tag -->
+          <td>
+            <%recommend_tour[:keywords].split(',').each_with_index do  |tag, idx|%>
+              <span class="badge-keyword badge-secondary"><%=tag %></span>
+            <%end %>
+          </td>
         </tr>
       <% end %>
       </tbody>

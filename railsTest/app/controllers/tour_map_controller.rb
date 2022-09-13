@@ -42,7 +42,7 @@ class TourMapController < ApplicationController
           "mapY": item.css("mapy").text.to_f,
           "keywords": keywords
         }
-      rescue ActiveRecord::RecordNotFound => e
+      rescue ActiveRecord::RecordNotFound, NoMethodError => e
         result << {
           "addr": item.css("addr1").text,
           "title": item.css("title").text,

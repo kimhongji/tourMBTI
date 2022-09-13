@@ -74,7 +74,7 @@ class TourKeywordsController < ApplicationController
                                   }
       @recommend_list = recommendations(tour_list, target_keyword_list).take(10)
       @keywords_result = sorted_array.take(10).to_h
-      @keywords_json = sorted_array.map{ |array|
+      @keywords_json = sorted_array.take(25).map{ |array|
         {
           "name": array[0],
           "weight": array[1]
