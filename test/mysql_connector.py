@@ -39,7 +39,6 @@ class MysqlConn:
             return False
 
 
-
 if __name__ == "__main__":
     api = TourAPI(AreaCodes.SEOUL)
     contentTypeIds = ["12"]
@@ -48,19 +47,29 @@ if __name__ == "__main__":
     mysql_conn = MysqlConn()
     for tour in api.get_tour_list(contentTypeIds):
         raw = []
+
         # reviews
-        reviews = redis_conn.get_place_reviews(tour["title"])
-        for review in reviews:
-            raw.append(review)
+        try:
+            reviews = redis_conn.get_place_reviews(tour["title"])
+            for review in reviews:
+                raw.append(review)
+        except:
+            print("there is no reviews")
 
         # info
-        info = redis_conn.get_place_info(tour["title"])
-        raw.append(info)
+        try:
+            info = redis_conn.get_place_info(tour["title"])
+            raw.append(info)
+        except:
+            print("there is no info")
 
         # wiki
-        if redis_conn.is_place_wiki_exist(tour["title"]):
-            wiki = redis_conn.get_place_wiki(tour["title"])
-            raw.append(wiki)
+        try:
+            if redis_conn.is_place_wiki_exist(tour["title"]):
+                wiki = redis_conn.get_place_wiki(tour["title"])
+                raw.append(wiki)
+        except:
+            print("there is no wiki")
 
         print(tour['title'])
 
